@@ -1,14 +1,16 @@
 <template>
   <el-container class="home-container">
     <!-- 左边侧栏 -->
-    <el-aside width="200px" class="my-aside">
-      <div class="logo"></div>
+    <el-aside :width="isOpen?'200px':'64px'" class="my-aside">
+      <div class="logo" :class="{minLogo:!isOpen}"></div>
       <el-menu
         default-active="1"
-        background-color="#545c64"
         text-color="#fff"
+        background-color="#002233"
         active-text-color="#ffd04b"
         style="border-right:none"
+        :collapse="!isOpen"
+        :collapse-transition="false"
       >
         <el-menu-item index="1">
           <i class="el-icon-s-home"></i>
@@ -44,20 +46,20 @@
     <el-container>
       <!-- 头部 -->
       <el-header class="my-header">
-        <span class="el-icon-s-fold icon"></span>
+        <span class="el-icon-s-fold icon" @click="toggle()"></span>
         <span class="text">个人文章管理中心</span>
         <!-- 下拉菜单组件 -->
         <el-dropdown class="my-dropdown">
           <span class="el-dropdown-link">
             <!-- 头像 -->
-            <img src="../assets/avatar.jpg" class="user-avatar" />
+            <img :src="userAvatar" class="user-avatar" />
             <!-- 用户名 -->
-            <span class="user-name">王某某</span>
+            <span class="user-name">{{userName}}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-setting">个人设置</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-unlock">退出登录</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-setting" @click.native="setting()">个人设置</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-unlock" @click.native="logout()">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
@@ -70,7 +72,33 @@
 </template>
 
 <script>
-export default {};
+import auth from "@/utils/auth";
+export default {
+  data() {
+    return {
+      isOpen: true,
+      userName: "",
+      userAvatar: ""
+    };
+  },
+  created() {
+    const user = auth.getUser();
+    this.userName = user.name;
+    this.userAvatar = user.photo;
+  },
+  methods: {
+    toggle() {
+      this.isOpen = !this.isOpen;
+    },
+    setting() {
+      this.$router.push("/setting");
+    },
+    logout() {
+      auth.delUser();
+      this.$router.push("/login");
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>
@@ -113,6 +141,10 @@ export default {};
     height: 60px;
     background: #002244 url("../assets/logo_admin.png") no-repeat center/140px
       auto;
+  }
+  .minLogo {
+    background-image: url("../assets/logo_admin_01.png");
+    background-size: 36px auto;
   }
 }
 </style>
