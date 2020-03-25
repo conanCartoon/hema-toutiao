@@ -49,7 +49,7 @@
         <span class="el-icon-s-fold icon" @click="toggle()"></span>
         <span class="text">个人文章管理中心</span>
         <!-- 下拉菜单组件 -->
-        <el-dropdown class="my-dropdown">
+        <el-dropdown class="my-dropdown" @command="handleClick">
           <span class="el-dropdown-link">
             <!-- 头像 -->
             <img :src="userAvatar" class="user-avatar" />
@@ -58,8 +58,8 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-setting" @click.native="setting()">个人设置</el-dropdown-item>
-            <el-dropdown-item icon="el-icon-unlock" @click.native="logout()">退出登录</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-setting" command="setting">个人设置</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-unlock" command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
@@ -94,8 +94,13 @@ export default {
       this.$router.push("/setting");
     },
     logout() {
+      // 清除用户
       auth.delUser();
+      // 跳转到登录页面
       this.$router.push("/login");
+    },
+    handleClick(command) {
+      this[command]();
     }
   }
 };
